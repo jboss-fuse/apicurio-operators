@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"log"
 	"net/http"
+	"path/filepath"
 
 	api "github.com/apicurio/apicurio-operators/apicurito/pkg/apis/apicur/v1alpha1"
 	config "github.com/apicurio/apicurio-operators/apicurito/pkg/configuration"
@@ -468,16 +470,33 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-func createFile(filepath string, obj interface{}) {
-	f, err := os.Create(filepath)
+func createFile(fullfile string, obj interface{}) {
+	createParentDirIfMissing(fullfile)
+	f, err := os.Create(fullfile)
 	defer f.Close()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	writer := bufio.NewWriter(f)
-	util.MarshallObject(obj, writer)
+	_, _ = writer.WriteString("# This is a generated file by tools/run/run.go\n")
+	err = util.MarshallObject(obj, writer)
+	if err != nil {
+		fmt.Println(err)
+	}
 	writer.Flush()
+}
+
+func createParentDirIfMissing(file string) {
+	idx := strings.LastIndex(file, string(filepath.Separator))
+	dirName := file[:idx]
+	_, err := os.Stat(dirName)
+	if os.IsNotExist(err) {
+		errDir := os.MkdirAll(dirName, 0755)
+		if errDir != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 func GetBoolEnv(key string) bool {

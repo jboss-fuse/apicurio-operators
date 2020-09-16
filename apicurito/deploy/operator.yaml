@@ -1,3 +1,4 @@
+# This is a generated file by tools/run/run.go
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,7 +14,14 @@ spec:
     metadata:
       labels:
         app: apicurito
+        com.company: Red_Hat
         name: apicurito-operator
+        rht.comp: Fuse
+        rht.comp_ver: "7.8"
+        rht.prod_name: Red_Hat_Integration
+        rht.prod_ver: "7.8"
+        rht.subcomp: apicurito-operator
+        rht.subcomp_t: infrastructure
     spec:
       containers:
       - env:
@@ -26,7 +34,7 @@ spec:
         - name: RELATED_IMAGE_APICURITO
           value: apicurio/apicurito-ui:1.1.1
         - name: RELATED_IMAGE_GENERATOR
-          value: fuse-apicurito-generator:latest
+          value: apicurio/fuse-apicurito-generator:latest
         - name: POD_NAME
           valueFrom:
             fieldRef:
